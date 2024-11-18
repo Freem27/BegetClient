@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BegetClient": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "user": ""
+      }
+    }
+  }
+}
