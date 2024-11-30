@@ -8,7 +8,12 @@ using TDV.BegetClient.Models;
 
 namespace TDV.BegetClient
 {
-    public class BegetClient
+    public interface IBegetClient
+    {
+        IBegetDomain Domain { get; }
+    }
+
+    public class BegetClient : IBegetClient
     {
         private readonly string _user;
         private readonly string _password;
@@ -23,7 +28,7 @@ namespace TDV.BegetClient
             _httpClient = new HttpClient();
         }
 
-        public BegetDomain Domain => new BegetDomain(this);
+        public IBegetDomain Domain => new BegetDomain(this);
 
         internal async Task<string> GetRaw(string url)
         {
@@ -34,15 +39,16 @@ namespace TDV.BegetClient
             var resultUrl = _apiUrl + url;
             if (resultUrl.Contains("?"))
             {
-                resultUrl+=$"&{queryString}";
-            } else
+                resultUrl += $"&{queryString}";
+            }
+            else
             {
 
                 resultUrl += $"?{queryString}";
             }
             var resp = await _httpClient.GetAsync(resultUrl);
             resp.EnsureSuccessStatusCode();
-            var result= await resp.Content.ReadAsStringAsync();
+            var result = await resp.Content.ReadAsStringAsync();
             return result;
         }
 
@@ -66,7 +72,8 @@ namespace TDV.BegetClient
         {
             get
             {
-                var options = new JsonSerializerOptions { 
+                var options = new JsonSerializerOptions
+                {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     Converters =
                     {

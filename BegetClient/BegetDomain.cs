@@ -7,7 +7,13 @@ using TDV.BegetClient.Models.Domain;
 
 namespace TDV.BegetClient
 {
-    public class BegetDomain
+    public interface IBegetDomain
+    {
+        Task<CheckDomainToRegisterResponse> CheckDomainToRegister(string domainWithoutZone, int zoneId, int periodYears = 1);
+        Task<IEnumerable<BegetZone>> GetZoneList();
+    }
+
+    public class BegetDomain : IBegetDomain
     {
         private readonly BegetClient _client;
 
@@ -22,7 +28,7 @@ namespace TDV.BegetClient
             return resp.Result.Values.ToList();
         }
 
-        public async Task<CheckDomainToRegisterResponse> CheckDomainToRegister(string domainWithoutZone, int zoneId, int periodYears=1)
+        public async Task<CheckDomainToRegisterResponse> CheckDomainToRegister(string domainWithoutZone, int zoneId, int periodYears = 1)
         {
             var query = $"input_format=json&input_data={HttpUtility.UrlEncode($"{{\"hostname\": \"{domainWithoutZone}\", \"zone_id\": {zoneId}, \"period\":{periodYears}}}")}";
             var resp = await _client.GetAnswer<AnswerWithResult<CheckDomainToRegisterResponse>>($"domain/checkDomainToRegister?{query}");
